@@ -47,3 +47,65 @@ tSuite eliminates tool sprawl by providing an all-in-one platform for:
 
 ### Quick Start
 ```bash
+# Clone the repository
+git clone https://github.com/shreyas-chickerur/tSuite.git
+cd tSuite
+
+# Start infrastructure
+docker-compose up -d
+
+# Install dependencies
+npm install
+
+# Run database migrations
+npm run migrate
+
+# Start development servers
+npm run dev
+```
+
+Visit `http://localhost:3000` to access the application.
+
+## Project Structure
+```
+tSuite/
+├── services/
+│   ├── api-gateway/       # Main API server
+│   ├── test-executor/     # Test execution service
+│   ├── analysis-engine/   # Security & quality analysis
+│   ├── ai-service/        # AI/ML features
+│   └── frontend/          # React web application
+├── docs/                  # Documentation
+├── infrastructure/        # Deployment configs
+├── docker-compose.yml     # Local development setup
+└── README.md
+```
+
+## Documentation
+
+- [Development Plan](docs/development-plan.md)
+- [Architecture](docs/architecture.md)
+- [API Documentation](docs/api.md)
+- [Deployment Guide](docs/deployment.md)
+
+## Roadmap
+
+- [x] Project setup and infrastructure
+- [ ] MVP: Test execution and basic UI
+- [ ] Security scanning integration
+- [ ] AI-powered features
+- [ ] Advanced observability
+- [ ] Enterprise features
+- [ ] Public beta release
+
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details.
+
+## License
+
+[Choose: MIT License / Apache 2.0 / Proprietary]
+
+## Contact
+
+For questions or support, please open an issue or contact [schickerur2020@gmail.com]
