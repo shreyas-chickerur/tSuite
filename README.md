@@ -90,7 +90,7 @@ tSuite/
 
 ## Roadmap
 
-- [x] Project setup and infrastructure
+- [ ] Project setup and infrastructure
 - [ ] MVP: Test execution and basic UI
 - [ ] Security scanning integration
 - [ ] AI-powered features
