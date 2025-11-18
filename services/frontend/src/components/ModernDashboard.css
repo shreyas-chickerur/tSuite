@@ -43,7 +43,9 @@
 }
 
 .logo-icon {
-  font-size: 1.75rem;
+  width: 24px;
+  height: 24px;
+  color: #3b82f6;
 }
 
 .logo-text {
@@ -185,27 +187,45 @@
 
 .content-header {
   background: #1e293b;
-  padding: 1.5rem 2rem;
+  padding: 2rem 2rem;
   border-bottom: 1px solid #334155;
+}
+
+.header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.title-icon {
+  width: 28px;
+  height: 28px;
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
 .header-title h1 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0 0 0.25rem 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
   color: #f1f5f9;
   font-family: 'Monaco', 'Courier New', monospace;
   letter-spacing: -0.02em;
 }
 
 .header-subtitle {
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   color: #94a3b8;
   margin: 0;
   font-family: 'Monaco', 'Courier New', monospace;
+  margin-left: 44px;
 }
 
 .header-actions {
@@ -214,12 +234,11 @@
 }
 
 .icon-btn {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 8px;
   border: 1px solid #334155;
   background: #0f172a;
-  font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
