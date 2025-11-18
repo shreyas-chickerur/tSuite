@@ -5,15 +5,54 @@ interface SecurityResultsProps {
   scanId: string;
 }
 
+interface ScanStatus {
+  status: string;
+  scanner_type?: string;
+  [key: string]: unknown;
+}
+
+interface Vulnerability {
+  package: string;
+  severity: string;
+  title: string;
+  cve?: string;
+  [key: string]: unknown;
+}
+
+interface Finding {
+  severity: string;
+  file: string;
+  line: number;
+  message: string;
+  rule_id: string;
+  [key: string]: unknown;
+}
+
+interface ScanResults {
+  status: string;
+  results?: {
+    total_vulnerabilities?: number;
+    total_findings?: number;
+    critical?: number;
+    high?: number;
+    medium?: number;
+    low?: number;
+    vulnerabilities?: Vulnerability[];
+    findings?: Finding[];
+    coverage?: Record<string, unknown>;
+  };
+  error?: string;
+  [key: string]: unknown;
+}
+
 export default function SecurityResults({ scanId }: SecurityResultsProps) {
-  const [status, setStatus] = useState<any>(null);
-  const [results, setResults] = useState<any>(null);
+  const [status, setStatus] = useState<ScanStatus | null>(null);
+  const [results, setResults] = useState<ScanResults | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let interval: number;
+    const interval = window.setInterval(async () => {
 
-    const pollStatus = async () => {
       try {
         const statusData = await api.getScanStatus(scanId);
         setStatus(statusData);
@@ -27,10 +66,7 @@ export default function SecurityResults({ scanId }: SecurityResultsProps) {
       } catch (error) {
         console.error('Error polling status:', error);
       }
-    };
-
-    pollStatus();
-    interval = window.setInterval(pollStatus, 2000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [scanId]);
@@ -85,7 +121,7 @@ export default function SecurityResults({ scanId }: SecurityResultsProps) {
       {scanData?.vulnerabilities && scanData.vulnerabilities.length > 0 && (
         <div className="vulnerabilities-list">
           <h3>Vulnerabilities</h3>
-          {scanData.vulnerabilities.slice(0, 10).map((vuln: any, index: number) => (
+          {scanData.vulnerabilities.slice(0, 10).map((vuln: Vulnerability, index: number) => (
             <div key={index} className={`vulnerability-item ${vuln.severity}`}>
               <div className="vuln-header">
                 <span className="vuln-severity">{vuln.severity}</span>
@@ -106,7 +142,7 @@ export default function SecurityResults({ scanId }: SecurityResultsProps) {
       {scanData?.findings && scanData.findings.length > 0 && (
         <div className="findings-list">
           <h3>Security Findings</h3>
-          {scanData.findings.slice(0, 10).map((finding: any, index: number) => (
+          {scanData.findings.slice(0, 10).map((finding: Finding, index: number) => (
             <div key={index} className={`finding-item ${finding.severity}`}>
               <div className="finding-header">
                 <span className="finding-severity">{finding.severity}</span>

@@ -5,15 +5,34 @@ interface TestResultsProps {
   testRunId: string;
 }
 
+interface TestStatus {
+  status: string;
+  progress?: number;
+  [key: string]: unknown;
+}
+
+interface TestResults {
+  status: string;
+  results?: {
+    total_tests?: number;
+    passed?: number;
+    failed?: number;
+    skipped?: number;
+    duration?: number;
+    coverage?: Record<string, unknown>;
+  };
+  error?: string;
+  [key: string]: unknown;
+}
+
 export default function TestResults({ testRunId }: TestResultsProps) {
-  const [status, setStatus] = useState<any>(null);
-  const [results, setResults] = useState<any>(null);
+  const [status, setStatus] = useState<TestStatus | null>(null);
+  const [results, setResults] = useState<TestResults | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let interval: number;
+    const interval = window.setInterval(async () => {
 
-    const pollStatus = async () => {
       try {
         const statusData = await api.getTestStatus(testRunId);
         setStatus(statusData);
@@ -27,10 +46,7 @@ export default function TestResults({ testRunId }: TestResultsProps) {
       } catch (error) {
         console.error('Error polling status:', error);
       }
-    };
-
-    pollStatus();
-    interval = window.setInterval(pollStatus, 2000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [testRunId]);
