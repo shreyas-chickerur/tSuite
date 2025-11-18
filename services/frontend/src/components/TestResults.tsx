@@ -72,14 +72,16 @@ export default function TestResults({ testRunId }: TestResultsProps) {
   if (!results) return null;
 
   console.log('Rendering results:', results);
+  console.log('Test data:', results.results);
   
   const { results: testData } = results;
   
   // Extract error from various possible locations
-  const errorMessage = results.error || 
-                      (testData as { error?: string })?.error || 
+  // The backend stores error in results.results.error
+  const errorMessage = (testData as { error?: string })?.error ||
+                      results.error || 
                       (results as { message?: string })?.message ||
-                      'Test execution failed with no error message provided';
+                      JSON.stringify(results, null, 2);
 
   // Show error prominently if test failed
   if (results.status === 'failed' || results.error || (testData as { error?: string })?.error) {
