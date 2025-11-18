@@ -1,0 +1,20 @@
+{
+  "name": "tsuite",
+  "version": "0.1.0",
+  "description": "Unified DevSecOps Testing Platform",
+  "private": true,
+  "workspaces": [
+    "services/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:frontend\"",
+    "dev:api": "cd services/api-gateway && npm run dev",
+    "dev:frontend": "cd services/frontend && npm run dev",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces"
+  },
+  "keywords": ["testing", "devops", "security", "quality", "ai"],
+  "author": "Shreyas Chickerur",
+  "license": "MIT"
+}
