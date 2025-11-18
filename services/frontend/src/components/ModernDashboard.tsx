@@ -30,7 +30,7 @@ const ModernDashboard = ({ userEmail, onLogout }: ModernDashboardProps) => {
       {/* Sidebar */}
       <aside className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
-          <Logo size={sidebarCollapsed ? 32 : 24} showText={!sidebarCollapsed} />
+          <Logo size={sidebarCollapsed ? 40 : 36} showText={!sidebarCollapsed} />
           <button 
             className="collapse-btn"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}

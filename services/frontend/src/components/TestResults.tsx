@@ -31,24 +31,31 @@ export default function TestResults({ testRunId }: TestResultsProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('Starting to poll test results for:', testRunId);
+    
     const interval = window.setInterval(async () => {
-
       try {
         const statusData = await api.getTestStatus(testRunId);
+        console.log('Test status update:', statusData);
         setStatus(statusData);
 
         if (statusData.status === 'completed' || statusData.status === 'failed') {
+          console.log('Test finished, fetching results...');
           const resultsData = await api.getTestResults(testRunId);
+          console.log('Test results:', resultsData);
           setResults(resultsData);
           setLoading(false);
           clearInterval(interval);
         }
       } catch (error) {
-        console.error('Error polling status:', error);
+        console.error('Error polling test status:', error);
       }
     }, 2000);
 
-    return () => clearInterval(interval);
+    return () => {
+      console.log('Cleaning up polling for:', testRunId);
+      clearInterval(interval);
+    };
   }, [testRunId]);
 
   if (loading) {
