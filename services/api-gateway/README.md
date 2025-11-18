@@ -16,8 +16,10 @@ The main API server for tSuite platform, built with Node.js, Express, TypeScript
 ### Prerequisites
 
 - Node.js 20+
-- PostgreSQL 15+ (or use Docker Compose)
+- PostgreSQL 14+ (or use Docker Compose)
 - Redis 7+ (or use Docker Compose)
+
+**Note:** We use PostgreSQL 14 and Prisma 4.16.2 due to compatibility issues between Prisma 5.x and PostgreSQL 15's permission system. This is a known issue in the Prisma ecosystem.
 
 ### Installation
 
@@ -36,18 +38,22 @@ cp .env.example .env
 4. Start infrastructure (PostgreSQL, Redis, etc.):
 ```bash
 cd ../..
-docker-compose up -d postgres redis
+docker compose up -d postgres redis
 ```
 
-5. Run database migrations:
+5. Apply database schema:
 ```bash
-npm run migrate
-```
+# Generate SQL from Prisma schema
+npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > migration.sql
 
-6. Generate Prisma client:
-```bash
+# Apply to database
+docker exec -i tsuite-postgres psql -U postgres -d tsuite_db < migration.sql
+
+# Generate Prisma client
 npm run prisma:generate
 ```
+
+**Note:** We use `prisma migrate diff` instead of `prisma migrate dev` due to permission issues with Prisma's shadow database feature.
 
 ### Development
 

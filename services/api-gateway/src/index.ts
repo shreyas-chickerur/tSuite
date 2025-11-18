@@ -6,13 +6,12 @@ import { redis } from './config/redis';
 
 const startServer = async () => {
   try {
-    // Test database connection
-    await prisma.$connect();
-    logger.info('Database connected successfully');
-
     // Test Redis connection
     await redis.ping();
     logger.info('Redis connected successfully');
+    
+    // Database will connect lazily on first query
+    logger.info('Database connection configured');
 
     // Start server
     const server = app.listen(config.port, () => {
