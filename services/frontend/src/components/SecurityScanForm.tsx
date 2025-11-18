@@ -23,6 +23,122 @@ export default function SecurityScanForm({ onScanStarted }: SecurityScanFormProp
 
     try {
       const scanId = `scan-${Date.now()}`;
+      
+      // Check if this is a demo request
+      if (formData.repositoryUrl.toLowerCase().includes('demo') || 
+          formData.repositoryUrl.toLowerCase().includes('example')) {
+        // Simulate demo scan with vulnerabilities
+        console.log('Running DEMO security scan with sample vulnerabilities');
+        
+        // Create mock results immediately
+        setTimeout(() => {
+          onScanStarted(scanId);
+        }, 1000);
+        
+        // Store demo results in sessionStorage for the results component to pick up
+        const demoResults = {
+          status: 'completed',
+          results: {
+            success: true,
+            total_vulnerabilities: 12,
+            critical: 2,
+            high: 4,
+            medium: 5,
+            low: 1,
+            vulnerabilities: [
+              {
+                package: 'lodash',
+                severity: 'critical',
+                title: 'Prototype Pollution in lodash',
+                cve: 'CVE-2019-10744',
+                description: 'Versions of lodash before 4.17.12 are vulnerable to Prototype Pollution'
+              },
+              {
+                package: 'axios',
+                severity: 'critical',
+                title: 'Server-Side Request Forgery in axios',
+                cve: 'CVE-2023-45857',
+                description: 'Axios 1.5.1 allows SSRF via the proxy configuration'
+              },
+              {
+                package: 'express',
+                severity: 'high',
+                title: 'Open Redirect in express',
+                cve: 'CVE-2024-29041',
+                description: 'Express.js is vulnerable to open redirect attacks'
+              },
+              {
+                package: 'jsonwebtoken',
+                severity: 'high',
+                title: 'JWT Algorithm Confusion',
+                cve: 'CVE-2022-23529',
+                description: 'jsonwebtoken is vulnerable to algorithm confusion attacks'
+              },
+              {
+                package: 'minimist',
+                severity: 'high',
+                title: 'Prototype Pollution in minimist',
+                cve: 'CVE-2021-44906',
+                description: 'Prototype pollution vulnerability in minimist'
+              },
+              {
+                package: 'node-fetch',
+                severity: 'high',
+                title: 'Information Exposure in node-fetch',
+                cve: 'CVE-2022-0235',
+                description: 'node-fetch forwards secure headers to untrusted sites'
+              },
+              {
+                package: 'qs',
+                severity: 'medium',
+                title: 'Prototype Pollution in qs',
+                cve: 'CVE-2022-24999',
+                description: 'qs before 6.10.3 allows prototype pollution'
+              },
+              {
+                package: 'semver',
+                severity: 'medium',
+                title: 'Regular Expression Denial of Service in semver',
+                cve: 'CVE-2022-25883',
+                description: 'semver is vulnerable to ReDoS attacks'
+              },
+              {
+                package: 'ws',
+                severity: 'medium',
+                title: 'ReDoS vulnerability in ws',
+                cve: 'CVE-2024-37890',
+                description: 'ws is vulnerable to Regular Expression Denial of Service'
+              },
+              {
+                package: 'path-to-regexp',
+                severity: 'medium',
+                title: 'ReDoS in path-to-regexp',
+                cve: 'CVE-2024-45296',
+                description: 'path-to-regexp is vulnerable to ReDoS'
+              },
+              {
+                package: 'cookie',
+                severity: 'medium',
+                title: 'Cookie parsing vulnerability',
+                cve: 'CVE-2024-47764',
+                description: 'cookie package has parsing issues'
+              },
+              {
+                package: 'debug',
+                severity: 'low',
+                title: 'Regular Expression Denial of Service',
+                cve: 'CVE-2017-16137',
+                description: 'debug is vulnerable to ReDoS'
+              }
+            ]
+          }
+        };
+        
+        sessionStorage.setItem(`scan-results-${scanId}`, JSON.stringify(demoResults));
+        setLoading(false);
+        return;
+      }
+      
       const response = await api.runSecurityScan({
         project_id: formData.projectId,
         scan_id: scanId,

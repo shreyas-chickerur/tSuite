@@ -54,6 +54,17 @@ export default function SecurityResults({ scanId }: SecurityResultsProps) {
   useEffect(() => {
     console.log('Starting to poll security scan results for:', scanId);
     
+    // Check for demo results first
+    const demoData = sessionStorage.getItem(`scan-results-${scanId}`);
+    if (demoData) {
+      console.log('Loading DEMO security scan results');
+      const demoResults = JSON.parse(demoData);
+      setResults(demoResults);
+      setStatus({ status: 'completed', scanner_type: 'demo' });
+      setLoading(false);
+      return;
+    }
+    
     const interval = window.setInterval(async () => {
       try {
         const statusData = await api.getScanStatus(scanId);
