@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
+import './SecurityResults.css';
 
 interface SecurityResultsProps {
   scanId: string;
@@ -51,24 +52,31 @@ export default function SecurityResults({ scanId }: SecurityResultsProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('Starting to poll security scan results for:', scanId);
+    
     const interval = window.setInterval(async () => {
-
       try {
         const statusData = await api.getScanStatus(scanId);
+        console.log('Security scan status update:', statusData);
         setStatus(statusData);
 
         if (statusData.status === 'completed' || statusData.status === 'failed') {
+          console.log('Security scan finished, fetching results...');
           const resultsData = await api.getScanResults(scanId);
+          console.log('Security scan results:', resultsData);
           setResults(resultsData);
           setLoading(false);
           clearInterval(interval);
         }
       } catch (error) {
-        console.error('Error polling status:', error);
+        console.error('Error polling security scan status:', error);
       }
     }, 2000);
 
-    return () => clearInterval(interval);
+    return () => {
+      console.log('Cleaning up polling for:', scanId);
+      clearInterval(interval);
+    };
   }, [scanId]);
 
   if (loading) {

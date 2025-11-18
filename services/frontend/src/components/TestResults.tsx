@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
+import './TestResults.css';
 
 interface TestResultsProps {
   testRunId: string;
@@ -62,8 +63,8 @@ export default function TestResults({ testRunId }: TestResultsProps) {
     return (
       <div className="results-loading">
         <div className="spinner"></div>
-        <p>Status: {status?.status || 'queued'}</p>
-        {status?.progress !== undefined && <p>Progress: {status.progress}%</p>}
+        <p className="status-text">Status: {status?.status || 'queued'}</p>
+        {status?.progress !== undefined && <p className="progress-text">Progress: {status.progress}%</p>}
       </div>
     );
   }
@@ -72,13 +73,73 @@ export default function TestResults({ testRunId }: TestResultsProps) {
 
   const { results: testData } = results;
 
+  // Show error prominently if test failed
+  if (results.status === 'failed' || results.error) {
+    return (
+      <div className="test-results">
+        <div className="error-banner">
+          <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+          </svg>
+          <div className="error-content">
+            <h3>Test Execution Failed</h3>
+            <p>The test run encountered an error. Please review the details below and fix the issues.</p>
+          </div>
+        </div>
+
+        {results.error && (
+          <div className="error-details">
+            <h4>Error Details:</h4>
+            <pre className="error-message">{results.error}</pre>
+            <div className="error-actions">
+              <button className="action-btn" onClick={() => navigator.clipboard.writeText(results.error || '')}>
+                Copy Error
+              </button>
+            </div>
+          </div>
+        )}
+
+        {testData && (
+          <div className="results-summary">
+            <h4>Test Summary:</h4>
+            <div className="metrics">
+              <div className="metric">
+                <span className="metric-label">Total</span>
+                <span className="metric-value">{testData?.total_tests || 0}</span>
+              </div>
+              <div className="metric passed">
+                <span className="metric-label">Passed</span>
+                <span className="metric-value">{testData?.passed || 0}</span>
+              </div>
+              <div className="metric failed">
+                <span className="metric-label">Failed</span>
+                <span className="metric-value">{testData?.failed || 0}</span>
+              </div>
+              <div className="metric skipped">
+                <span className="metric-label">Skipped</span>
+                <span className="metric-value">{testData?.skipped || 0}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Show successful results
   return (
     <div className="test-results">
-      <div className="results-summary">
-        <div className={`status-badge ${results.status}`}>
-          {results.status === 'completed' ? '✓' : '✗'} {results.status}
+      <div className="success-banner">
+        <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+        </svg>
+        <div className="success-content">
+          <h3>Tests Completed Successfully</h3>
+          <p>All tests have been executed. Review the results below.</p>
         </div>
-        
+      </div>
+
+      <div className="results-summary">
         <div className="metrics">
           <div className="metric">
             <span className="metric-label">Total</span>
@@ -105,17 +166,10 @@ export default function TestResults({ testRunId }: TestResultsProps) {
 
       {testData?.coverage && Object.keys(testData.coverage).length > 0 && (
         <div className="coverage-section">
-          <h3>Code Coverage</h3>
+          <h4>Code Coverage</h4>
           <div className="coverage-info">
             <p>Coverage data available - see detailed report</p>
           </div>
-        </div>
-      )}
-
-      {results.error && (
-        <div className="error-section">
-          <h3>Error</h3>
-          <pre>{results.error}</pre>
         </div>
       )}
     </div>
