@@ -1,0 +1,174 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  firstName     String?
+  lastName      String?
+  role          UserRole       @default(USER)
+  isActive      Boolean        @default(true)
+  emailVerified Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  organizations OrganizationMember[]
+  projects      ProjectMember[]
+  testRuns      TestRun[]
+  apiKeys       ApiKey[]
+  
+  @@index([email])
+}
+
+enum UserRole {
+  ADMIN
+  USER
+  VIEWER
+}
+
+model Organization {
+  id          String               @id @default(uuid())
+  name        String
+  slug        String               @unique
+  description String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  
+  members     OrganizationMember[]
+  projects    Project[]
+  
+  @@index([slug])
+}
+
+model OrganizationMember {
+  id             String       @id @default(uuid())
+  organizationId String
+  userId         String
+  role           OrgRole      @default(MEMBER)
+  joinedAt       DateTime     @default(now())
+  
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([organizationId, userId])
+  @@index([userId])
+}
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+model Project {
+  id             String       @id @default(uuid())
+  name           String
+  slug           String
+  description    String?
+  repositoryUrl  String?
+  organizationId String
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  members        ProjectMember[]
+  testRuns       TestRun[]
+  
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+}
+
+model ProjectMember {
+  id        String      @id @default(uuid())
+  projectId String
+  userId    String
+  role      ProjectRole @default(DEVELOPER)
+  joinedAt  DateTime    @default(now())
+  
+  project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([projectId, userId])
+  @@index([userId])
+}
+
+enum ProjectRole {
+  MAINTAINER
+  DEVELOPER
+  VIEWER
+}
+
+model TestRun {
+  id          String       @id @default(uuid())
+  projectId   String
+  userId      String
+  status      TestStatus   @default(PENDING)
+  framework   String
+  branch      String?
+  commit      String?
+  startedAt   DateTime     @default(now())
+  completedAt DateTime?
+  duration    Int?
+  
+  totalTests  Int          @default(0)
+  passedTests Int          @default(0)
+  failedTests Int          @default(0)
+  skippedTests Int         @default(0)
+  
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  results     TestResult[]
+  
+  @@index([projectId])
+  @@index([userId])
+  @@index([status])
+  @@index([startedAt])
+}
+
+enum TestStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model TestResult {
+  id          String   @id @default(uuid())
+  testRunId   String
+  testName    String
+  status      String
+  duration    Int?
+  errorMessage String?
+  stackTrace  String?
+  createdAt   DateTime @default(now())
+  
+  testRun     TestRun  @relation(fields: [testRunId], references: [id], onDelete: Cascade)
+  
+  @@index([testRunId])
+}
+
+model ApiKey {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  key         String   @unique
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([key])
+}

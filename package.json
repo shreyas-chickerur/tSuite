@@ -1,0 +1,42 @@
+{
+  "name": "tsuite",
+  "version": "0.1.0",
+  "description": "Unified DevSecOps Testing Platform",
+  "private": true,
+  "workspaces": [
+    "services/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:frontend\" \"npm run dev:test-executor\"",
+    "dev:api": "cd services/api-gateway && npm run dev",
+    "dev:frontend": "cd services/frontend && npm run dev",
+    "dev:test-executor": "cd services/test-executor && uvicorn app.main:app --reload --port 8000",
+    "build": "npm run build --workspaces --if-present",
+    "build:api": "cd services/api-gateway && npm run build",
+    "build:frontend": "cd services/frontend && npm run build",
+    "test": "npm run test --workspaces --if-present",
+    "test:api": "cd services/api-gateway && npm test",
+    "test:frontend": "cd services/frontend && npm test",
+    "lint": "npm run lint --workspaces --if-present",
+    "setup": "npm install && npm run setup:api && npm run setup:frontend && npm run setup:test-executor",
+    "setup:api": "cd services/api-gateway && npm install && npx prisma generate",
+    "setup:frontend": "cd services/frontend && npm install",
+    "setup:test-executor": "cd services/test-executor && pip install -r requirements.txt",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f"
+  },
+  "keywords": [
+    "testing",
+    "devops",
+    "security",
+    "quality",
+    "ai"
+  ],
+  "author": "Shreyas Chickerur",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^4.16.2",
+    "prisma": "^4.16.2"
+  }
+}

@@ -42,8 +42,10 @@ tSuite eliminates tool sprawl by providing an all-in-one platform for:
 - Node.js 20+
 - Python 3.11+
 - Docker Desktop
-- PostgreSQL 15+
+- PostgreSQL 14+ (Note: Using 14 instead of 15 for Prisma compatibility)
 - Redis 7+
+
+**Important**: See [Infrastructure Setup Guide](docs/INFRASTRUCTURE_SETUP.md) for compatibility notes and known issues.
 
 ### Quick Start
 ```bash
@@ -57,8 +59,12 @@ docker-compose up -d
 # Install dependencies
 npm install
 
-# Run database migrations
-npm run migrate
+# Apply database schema (see docs/INFRASTRUCTURE_SETUP.md for details)
+cd services/api-gateway
+npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > migration.sql
+docker exec -i tsuite-postgres psql -U postgres -d tsuite_db < migration.sql
+npx prisma generate
+cd ../..
 
 # Start development servers
 npm run dev
@@ -83,6 +89,7 @@ tSuite/
 
 ## Documentation
 
+- [Infrastructure Setup Guide](docs/INFRASTRUCTURE_SETUP.md) - **Start here for setup**
 - [Development Plan](docs/development-plan.md)
 - [Architecture](docs/architecture.md)
 - [API Documentation](docs/api.md)
