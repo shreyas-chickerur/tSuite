@@ -71,10 +71,20 @@ export default function TestResults({ testRunId }: TestResultsProps) {
 
   if (!results) return null;
 
+  console.log('Rendering results:', results);
+  
   const { results: testData } = results;
+  
+  // Extract error from various possible locations
+  const errorMessage = results.error || 
+                      (testData as { error?: string })?.error || 
+                      (results as { message?: string })?.message ||
+                      'Test execution failed with no error message provided';
 
   // Show error prominently if test failed
-  if (results.status === 'failed' || results.error) {
+  if (results.status === 'failed' || results.error || (testData as { error?: string })?.error) {
+    console.log('Showing error state. Error message:', errorMessage);
+    
     return (
       <div className="test-results">
         <div className="error-banner">
@@ -87,17 +97,18 @@ export default function TestResults({ testRunId }: TestResultsProps) {
           </div>
         </div>
 
-        {results.error && (
-          <div className="error-details">
-            <h4>Error Details:</h4>
-            <pre className="error-message">{results.error}</pre>
-            <div className="error-actions">
-              <button className="action-btn" onClick={() => navigator.clipboard.writeText(results.error || '')}>
-                Copy Error
-              </button>
-            </div>
+        <div className="error-details">
+          <h4>Error Details:</h4>
+          <pre className="error-message">{errorMessage}</pre>
+          <div className="error-actions">
+            <button className="action-btn" onClick={() => navigator.clipboard.writeText(errorMessage)}>
+              Copy Error
+            </button>
+            <button className="action-btn" onClick={() => console.log('Full results object:', results)}>
+              Log Full Response
+            </button>
           </div>
-        )}
+        </div>
 
         {testData && (
           <div className="results-summary">
