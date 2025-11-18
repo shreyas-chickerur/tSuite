@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 
 from app.config import settings
-from app.routers import test_execution, health
+from app.routers import test_execution, health, security
 
 # Configure logging
 logging.basicConfig(
@@ -34,6 +34,11 @@ app.include_router(
     test_execution.router,
     prefix=f"/api/{settings.api_version}/tests",
     tags=["tests"]
+)
+app.include_router(
+    security.router,
+    prefix=f"/api/{settings.api_version}/security",
+    tags=["security"]
 )
 
 @app.on_event("startup")
