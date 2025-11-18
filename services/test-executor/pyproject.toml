@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "test-executor"
+version = "0.1.0"
+description = "tSuite Test Execution Service"
+authors = ["Shreyas Chickerur <schickerur2020@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.104.1"
+uvicorn = {extras = ["standard"], version = "^0.24.0"}
+pydantic = "^2.5.2"
+pydantic-settings = "^2.1.0"
+celery = "^5.3.4"
+redis = "^5.0.1"
+pytest = "^7.4.3"
+pytest-cov = "^4.1.0"
+httpx = "^0.25.2"
+python-multipart = "^0.0.6"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
