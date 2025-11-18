@@ -23,6 +23,15 @@ export default function TestExecutionForm({ onTestStarted }: TestExecutionFormPr
 
     try {
       const testRunId = `test-${Date.now()}`;
+      
+      console.log('Submitting test execution:', {
+        project_id: formData.projectId,
+        test_run_id: testRunId,
+        framework: formData.framework,
+        repository_url: formData.repositoryUrl,
+        branch: formData.branch,
+      });
+      
       const response = await api.executeTests({
         project_id: formData.projectId,
         test_run_id: testRunId,
@@ -31,11 +40,19 @@ export default function TestExecutionForm({ onTestStarted }: TestExecutionFormPr
         branch: formData.branch,
       });
 
+      console.log('Test execution response:', response);
+
       if (response.status === 'queued') {
         onTestStarted(testRunId);
+      } else if (response.error) {
+        setError(response.error);
+      } else {
+        setError('Failed to queue test execution. Please check if the Test Executor service is running.');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to start test execution');
+      console.error('Test execution error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to connect to Test Executor';
+      setError(`${errorMessage}. Make sure the Test Executor is running on http://localhost:8000`);
     } finally {
       setLoading(false);
     }
