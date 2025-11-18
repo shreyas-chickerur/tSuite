@@ -54,16 +54,32 @@ export default function SecurityResults({ scanId }: SecurityResultsProps) {
   useEffect(() => {
     console.log('Starting to poll security scan results for:', scanId);
     
-    // Check for demo results first
-    const demoData = sessionStorage.getItem(`scan-results-${scanId}`);
-    if (demoData) {
-      console.log('Loading DEMO security scan results');
-      const demoResults = JSON.parse(demoData);
-      setResults(demoResults);
-      setStatus({ status: 'completed', scanner_type: 'demo' });
-      setLoading(false);
+    // Function to check for demo results
+    const checkDemoResults = () => {
+      const demoData = sessionStorage.getItem(`scan-results-${scanId}`);
+      if (demoData) {
+        console.log('Loading DEMO security scan results');
+        const demoResults = JSON.parse(demoData);
+        setResults(demoResults);
+        setStatus({ status: 'completed', scanner_type: 'demo' });
+        setLoading(false);
+        return true;
+      }
+      return false;
+    };
+    
+    // Check immediately
+    if (checkDemoResults()) {
       return;
     }
+    
+    // Poll for demo results every 500ms
+    const demoInterval = window.setInterval(() => {
+      if (checkDemoResults()) {
+        clearInterval(demoInterval);
+        clearInterval(interval);
+      }
+    }, 500);
     
     const interval = window.setInterval(async () => {
       try {
@@ -87,6 +103,9 @@ export default function SecurityResults({ scanId }: SecurityResultsProps) {
     return () => {
       console.log('Cleaning up polling for:', scanId);
       clearInterval(interval);
+      if (typeof demoInterval !== 'undefined') {
+        clearInterval(demoInterval);
+      }
     };
   }, [scanId]);
 

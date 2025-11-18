@@ -30,15 +30,14 @@ export default function SecurityScanForm({ onScanStarted }: SecurityScanFormProp
         // Simulate demo scan with vulnerabilities
         console.log('Running DEMO security scan with sample vulnerabilities');
         
-        // Create mock results immediately
-        setTimeout(() => {
-          onScanStarted(scanId);
-        }, 1000);
+        // Start the scan to show loading state
+        onScanStarted(scanId);
         
-        // Store demo results in sessionStorage for the results component to pick up
-        const demoResults = {
-          status: 'completed',
-          results: {
+        // Store demo results in sessionStorage with a delay to simulate scanning
+        setTimeout(() => {
+          const demoResults = {
+            status: 'completed',
+            results: {
             success: true,
             total_vulnerabilities: 12,
             critical: 2,
@@ -132,9 +131,13 @@ export default function SecurityScanForm({ onScanStarted }: SecurityScanFormProp
               }
             ]
           }
-        };
+          };
+          
+          sessionStorage.setItem(`scan-results-${scanId}`, JSON.stringify(demoResults));
+          // Trigger a storage event to notify the results component
+          window.dispatchEvent(new Event('storage'));
+        }, 3000); // 3 second delay to show loading state
         
-        sessionStorage.setItem(`scan-results-${scanId}`, JSON.stringify(demoResults));
         setLoading(false);
         return;
       }
