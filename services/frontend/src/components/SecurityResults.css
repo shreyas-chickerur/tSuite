@@ -146,12 +146,22 @@
   border-color: #10b981;
 }
 
-.metric.failed {
+.metric.failed,
+.metric.critical {
   border-color: #dc2626;
 }
 
-.metric.skipped {
+.metric.skipped,
+.metric.high {
   border-color: #f59e0b;
+}
+
+.metric.medium {
+  border-color: #eab308;
+}
+
+.metric.low {
+  border-color: #3b82f6;
 }
 
 .metric-label {
@@ -173,12 +183,22 @@
   color: #6ee7b7;
 }
 
-.metric.failed .metric-value {
+.metric.failed .metric-value,
+.metric.critical .metric-value {
   color: #fca5a5;
 }
 
-.metric.skipped .metric-value {
+.metric.skipped .metric-value,
+.metric.high .metric-value {
   color: #fcd34d;
+}
+
+.metric.medium .metric-value {
+  color: #fde047;
+}
+
+.metric.low .metric-value {
+  color: #93c5fd;
 }
 
 .coverage-section {

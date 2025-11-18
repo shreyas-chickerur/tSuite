@@ -91,21 +91,104 @@ export default function SecurityResults({ scanId }: SecurityResultsProps) {
 
   if (!results) return null;
 
-  const { results: scanData } = results;
+  console.log('Rendering security results:', results);
+  console.log('Scan data:', results.results);
 
+  const { results: scanData } = results;
+  
+  // Extract error from correct location (same as TestResults)
+  const errorMessage = (scanData as { error?: string })?.error ||
+                      results.error || 
+                      (results as { message?: string })?.message ||
+                      JSON.stringify(results, null, 2);
+
+  const totalIssues = scanData?.total_vulnerabilities || scanData?.total_findings || 0;
+  const hasVulnerabilities = scanData?.vulnerabilities && scanData.vulnerabilities.length > 0;
+  const hasFindings = scanData?.findings && scanData.findings.length > 0;
+
+  // Show error prominently if scan failed
+  if (results.status === 'failed' || results.error || (scanData as { error?: string })?.error) {
+    console.log('Showing error state. Error message:', errorMessage);
+    
+    return (
+      <div className="security-results">
+        <div className="error-banner">
+          <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+          </svg>
+          <div className="error-content">
+            <h3>Security Scan Failed</h3>
+            <p>The security scan encountered an error. Please review the details below and fix the issues.</p>
+          </div>
+        </div>
+
+        <div className="error-details">
+          <h4>Error Details:</h4>
+          <pre className="error-message">{errorMessage}</pre>
+          <div className="error-actions">
+            <button className="action-btn" onClick={() => navigator.clipboard.writeText(errorMessage)}>
+              Copy Error
+            </button>
+            <button className="action-btn" onClick={() => console.log('Full results object:', results)}>
+              Log Full Response
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show success with no issues found
+  if (totalIssues === 0 && !hasVulnerabilities && !hasFindings) {
+    return (
+      <div className="security-results">
+        <div className="success-banner">
+          <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+          </svg>
+          <div className="success-content">
+            <h3>No Security Issues Found</h3>
+            <p>The security scan completed successfully with no vulnerabilities or security issues detected.</p>
+          </div>
+        </div>
+
+        <div className="results-summary">
+          <div className="metrics">
+            <div className="metric">
+              <span className="metric-label">Total Issues</span>
+              <span className="metric-value">0</span>
+            </div>
+            <div className="metric critical">
+              <span className="metric-label">Critical</span>
+              <span className="metric-value">0</span>
+            </div>
+            <div className="metric high">
+              <span className="metric-label">High</span>
+              <span className="metric-value">0</span>
+            </div>
+            <div className="metric medium">
+              <span className="metric-label">Medium</span>
+              <span className="metric-value">0</span>
+            </div>
+            <div className="metric low">
+              <span className="metric-label">Low</span>
+              <span className="metric-value">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show results with vulnerabilities/findings
   return (
     <div className="security-results">
       <div className="results-summary">
-        <div className={`status-badge ${results.status}`}>
-          {results.status === 'completed' ? '✓' : '✗'} {results.status}
-        </div>
-        
+        <h4>Security Scan Summary:</h4>
         <div className="metrics">
           <div className="metric">
             <span className="metric-label">Total Issues</span>
-            <span className="metric-value">
-              {scanData?.total_vulnerabilities || scanData?.total_findings || 0}
-            </span>
+            <span className="metric-value">{totalIssues}</span>
           </div>
           <div className="metric critical">
             <span className="metric-label">Critical</span>
