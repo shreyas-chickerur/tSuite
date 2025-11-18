@@ -94,8 +94,10 @@ export default function SecurityResults({ scanId }: SecurityResultsProps) {
     return (
       <div className="results-loading">
         <div className="spinner"></div>
-        <p>Status: {status?.status || 'queued'}</p>
-        <p>Scanner: {status?.scanner_type}</p>
+        <p className="status-text">Status: {status?.status || 'queued'}</p>
+        {status?.scanner_type && (
+          <p className="progress-text">Scanner: {status.scanner_type}</p>
+        )}
       </div>
     );
   }
