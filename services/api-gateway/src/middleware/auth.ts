@@ -15,12 +15,13 @@ export const authenticate = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'No token provided' });
+      res.status(401).json({ error: 'No token provided' });
+      return;
     }
     
     const token = authHeader.substring(7);
@@ -37,7 +38,8 @@ export const authenticate = async (
     });
     
     if (!user || !user.isActive) {
-      return res.status(401).json({ error: 'Invalid token' });
+      res.status(401).json({ error: 'Invalid token' });
+      return;
     }
     
     req.user = {
@@ -48,18 +50,20 @@ export const authenticate = async (
     
     next();
   } catch (error) {
-    return res.status(401).json({ error: 'Invalid token' });
+    res.status(401).json({ error: 'Invalid token' });
   }
 };
 
 export const requireRole = (...roles: string[]) => {
-  return (req: AuthRequest, res: Response, next: NextFunction) => {
+  return (req: AuthRequest, res: Response, next: NextFunction): void => {
     if (!req.user) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
     }
     
     if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ error: 'Forbidden' });
+      res.status(403).json({ error: 'Forbidden' });
+      return;
     }
     
     next();
