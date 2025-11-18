@@ -36,23 +36,6 @@
   background: #0f172a;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.logo-icon {
-  width: 24px;
-  height: 24px;
-  color: #3b82f6;
-}
-
-.logo-text {
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
 
 .collapse-btn {
   background: #334155;

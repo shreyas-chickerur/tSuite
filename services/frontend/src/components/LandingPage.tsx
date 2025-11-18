@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Logo from './Logo';
 import './LandingPage.css';
 
 interface LandingPageProps {
@@ -21,8 +22,7 @@ const LandingPage = ({ onLogin }: LandingPageProps) => {
     <div className="landing-page">
       {/* Logo in top-left corner */}
       <div className="top-logo">
-        <span className="logo-icon">⚡</span>
-        <span className="logo-text">tSuite</span>
+        <Logo size={32} showText={true} />
       </div>
 
       <div className="landing-hero">

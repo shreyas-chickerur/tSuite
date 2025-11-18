@@ -3,6 +3,7 @@ import TestExecutionForm from './TestExecutionForm';
 import TestResults from './TestResults';
 import SecurityScanForm from './SecurityScanForm';
 import SecurityResults from './SecurityResults';
+import Logo from './Logo';
 import './ModernDashboard.css';
 
 interface ModernDashboardProps {
@@ -29,12 +30,7 @@ const ModernDashboard = ({ userEmail, onLogout }: ModernDashboardProps) => {
       {/* Sidebar */}
       <aside className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
-          <div className="logo">
-            <svg className="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-            </svg>
-            {!sidebarCollapsed && <span className="logo-text">tSuite</span>}
-          </div>
+          <Logo size={sidebarCollapsed ? 32 : 24} showText={!sidebarCollapsed} />
           <button 
             className="collapse-btn"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
