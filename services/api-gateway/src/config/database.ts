@@ -9,19 +9,34 @@ const prisma = new PrismaClient({
   ],
 });
 
+// Prisma event types
+interface QueryEvent {
+  query: string;
+  duration: number;
+}
+
+interface ErrorEvent {
+  message: string;
+  target?: string;
+}
+
+interface WarnEvent {
+  message: string;
+}
+
 // Log database queries in development
 if (process.env.NODE_ENV === 'development') {
-  prisma.$on('query', (e: any) => {
+  prisma.$on('query', (e: QueryEvent) => {
     logger.debug('Query: ' + e.query);
     logger.debug('Duration: ' + e.duration + 'ms');
   });
 }
 
-prisma.$on('error', (e: any) => {
+prisma.$on('error', (e: ErrorEvent) => {
   logger.error('Database error:', e);
 });
 
-prisma.$on('warn', (e: any) => {
+prisma.$on('warn', (e: WarnEvent) => {
   logger.warn('Database warning:', e);
 });
 
