@@ -19,47 +19,65 @@ const LandingPage = ({ onLogin }: LandingPageProps) => {
 
   return (
     <div className="landing-page">
+      {/* Logo in top-left corner */}
+      <div className="top-logo">
+        <span className="logo-icon">⚡</span>
+        <span className="logo-text">tSuite</span>
+      </div>
+
       <div className="landing-hero">
         <div className="hero-content">
-          <div className="logo-section">
-            <div className="logo">
-              <span className="logo-icon">⚡</span>
-              <span className="logo-text">tSuite</span>
-            </div>
-            <p className="tagline">DevSecOps Testing Platform</p>
-          </div>
-          
           <h1 className="hero-title">
-            Automated Testing & Security
+            Ship Quality Code,
             <br />
-            <span className="gradient-text">Built for Modern Teams</span>
+            <span className="highlight-text">Faster</span>
           </h1>
           
           <p className="hero-description">
-            Run tests, scan for vulnerabilities, and ensure code quality—all in one platform.
-            Integrate seamlessly with your CI/CD pipeline.
+            Automated testing and security scanning for development teams.
+            <br />
+            Catch bugs and vulnerabilities before they reach production.
           </p>
 
-          <div className="features-grid">
-            <div className="feature-card">
-              <div className="feature-icon">🧪</div>
-              <h3>Test Execution</h3>
-              <p>Jest, pytest, Cypress, and more</p>
+          <div className="stats-row">
+            <div className="stat-item">
+              <div className="stat-number">2</div>
+              <div className="stat-label">Test Frameworks</div>
             </div>
-            <div className="feature-card">
-              <div className="feature-icon">🔒</div>
-              <h3>Security Scanning</h3>
-              <p>Dependency & SAST analysis</p>
+            <div className="stat-item">
+              <div className="stat-number">2</div>
+              <div className="stat-label">Security Scanners</div>
             </div>
-            <div className="feature-card">
-              <div className="feature-icon">📊</div>
-              <h3>Real-time Results</h3>
-              <p>Live status updates & metrics</p>
+            <div className="stat-item">
+              <div className="stat-number">100%</div>
+              <div className="stat-label">Open Source</div>
             </div>
-            <div className="feature-card">
-              <div className="feature-icon">⚙️</div>
-              <h3>CI/CD Ready</h3>
-              <p>Easy integration with pipelines</p>
+          </div>
+
+          <div className="features-list">
+            <div className="feature-item">
+              <svg className="check-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              <span>Run Jest, pytest, Cypress, and Mocha tests</span>
+            </div>
+            <div className="feature-item">
+              <svg className="check-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              <span>Scan for dependency vulnerabilities and security issues</span>
+            </div>
+            <div className="feature-item">
+              <svg className="check-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              <span>Real-time status updates and detailed reports</span>
+            </div>
+            <div className="feature-item">
+              <svg className="check-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              <span>Integrate with GitHub Actions, GitLab CI, and more</span>
             </div>
           </div>
         </div>
