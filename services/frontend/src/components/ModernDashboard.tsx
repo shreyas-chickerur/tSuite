@@ -91,6 +91,19 @@ const ModernDashboard = ({ userEmail, onLogout }: ModernDashboardProps) => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
+  // Close notification dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (showNotifications && !target.closest('.notification-wrapper')) {
+        setShowNotifications(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showNotifications]);
+
   return (
     <div className="modern-dashboard" data-theme={theme}>
       {/* Sidebar */}

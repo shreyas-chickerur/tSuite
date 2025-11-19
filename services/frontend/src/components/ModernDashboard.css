@@ -350,23 +350,28 @@
 
 /* Settings Page */
 .settings-content {
-  padding: 2rem;
+  padding: 0;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.settings-content .section-title {
+  display: none;
 }
 
 .settings-section {
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
 }
 
 .settings-section h3 {
-  font-size: 1.1rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: #f1f5f9;
-  margin: 0 0 1.5rem 0;
+  color: var(--text-secondary);
+  margin: 0 0 1rem 0;
   font-family: 'Monaco', 'Courier New', monospace;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid #334155;
-  padding-bottom: 0.75rem;
+  letter-spacing: 0.1em;
+  padding: 0 1.5rem;
 }
 
 .setting-item {
@@ -374,54 +379,80 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  background: #0f172a;
-  border: 1px solid #334155;
-  border-radius: 8px;
-  margin-bottom: 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 0;
+  margin-bottom: 0;
+  border-bottom: none;
+  transition: background 0.2s ease;
+}
+
+.setting-item:first-of-type {
+  border-radius: 12px 12px 0 0;
+}
+
+.setting-item:last-of-type {
+  border-radius: 0 0 12px 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.setting-item:only-of-type {
+  border-radius: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.setting-item:hover {
+  background: var(--bg-tertiary);
+}
+
+.setting-info {
+  flex: 1;
 }
 
 .setting-info label {
   display: block;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--text-primary);
   margin-bottom: 0.25rem;
   font-family: 'Monaco', 'Courier New', monospace;
 }
 
 .setting-info p {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
   margin: 0;
 }
 
 .setting-control {
   display: flex;
   align-items: center;
+  margin-left: 2rem;
 }
 
 .setting-select {
   padding: 0.5rem 1rem;
-  background: #1e293b;
-  border: 1px solid #475569;
-  color: #e2e8f0;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
   border-radius: 6px;
   font-size: 0.9rem;
   font-family: 'Monaco', 'Courier New', monospace;
   cursor: pointer;
-  min-width: 200px;
+  min-width: 150px;
+  transition: border-color 0.2s ease;
 }
 
 .setting-select:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: var(--accent-blue);
 }
 
 .setting-control input[type="checkbox"] {
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #3b82f6;
+  accent-color: var(--accent-blue);
 }
 
 /* Profile Page - Redesigned */
