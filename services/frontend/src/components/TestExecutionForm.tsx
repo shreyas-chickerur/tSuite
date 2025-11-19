@@ -6,6 +6,18 @@ interface TestExecutionFormProps {
   onTestStarted: (testRunId: string) => void;
 }
 
+interface DiscoveredTest {
+  name: string;
+  path: string;
+  type: 'unit' | 'integration' | 'functional' | 'e2e';
+  category: string;
+}
+
+interface TestCategory {
+  name: string;
+  tests: DiscoveredTest[];
+}
+
 export default function TestExecutionForm({ onTestStarted }: TestExecutionFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -15,6 +27,102 @@ export default function TestExecutionForm({ onTestStarted }: TestExecutionFormPr
     framework: 'jest',
     branch: 'main',
   });
+  const [discoveredTests, setDiscoveredTests] = useState<TestCategory[]>([]);
+  const [selectedTests, setSelectedTests] = useState<Set<string>>(new Set());
+  const [showTestSelection, setShowTestSelection] = useState(false);
+  const [discovering, setDiscovering] = useState(false);
+
+  const discoverTests = async () => {
+    setDiscovering(true);
+    setError(null);
+
+    // Simulate test discovery (in real implementation, this would call backend)
+    setTimeout(() => {
+      const demoTests: TestCategory[] = [
+        {
+          name: 'Authentication',
+          tests: [
+            { name: 'User Login', path: 'tests/auth/login.test.js', type: 'functional', category: 'Authentication' },
+            { name: 'User Registration', path: 'tests/auth/register.test.js', type: 'functional', category: 'Authentication' },
+            { name: 'Password Reset', path: 'tests/auth/reset.test.js', type: 'functional', category: 'Authentication' },
+            { name: 'JWT Token Validation', path: 'tests/auth/jwt.test.js', type: 'unit', category: 'Authentication' },
+          ]
+        },
+        {
+          name: 'API Endpoints',
+          tests: [
+            { name: 'GET /users', path: 'tests/api/users.test.js', type: 'integration', category: 'API Endpoints' },
+            { name: 'POST /users', path: 'tests/api/users-create.test.js', type: 'integration', category: 'API Endpoints' },
+            { name: 'PUT /users/:id', path: 'tests/api/users-update.test.js', type: 'integration', category: 'API Endpoints' },
+            { name: 'DELETE /users/:id', path: 'tests/api/users-delete.test.js', type: 'integration', category: 'API Endpoints' },
+          ]
+        },
+        {
+          name: 'Database',
+          tests: [
+            { name: 'Connection Pool', path: 'tests/db/connection.test.js', type: 'integration', category: 'Database' },
+            { name: 'User Model', path: 'tests/db/user-model.test.js', type: 'unit', category: 'Database' },
+            { name: 'Migrations', path: 'tests/db/migrations.test.js', type: 'integration', category: 'Database' },
+          ]
+        },
+        {
+          name: 'Utilities',
+          tests: [
+            { name: 'Email Validator', path: 'tests/utils/email.test.js', type: 'unit', category: 'Utilities' },
+            { name: 'Password Hasher', path: 'tests/utils/password.test.js', type: 'unit', category: 'Utilities' },
+            { name: 'Date Formatter', path: 'tests/utils/date.test.js', type: 'unit', category: 'Utilities' },
+          ]
+        },
+        {
+          name: 'E2E Flows',
+          tests: [
+            { name: 'Complete User Journey', path: 'tests/e2e/user-journey.test.js', type: 'e2e', category: 'E2E Flows' },
+            { name: 'Checkout Process', path: 'tests/e2e/checkout.test.js', type: 'e2e', category: 'E2E Flows' },
+          ]
+        }
+      ];
+
+      setDiscoveredTests(demoTests);
+      setShowTestSelection(true);
+      setDiscovering(false);
+
+      // Select all tests by default
+      const allTestPaths = demoTests.flatMap(cat => cat.tests.map(t => t.path));
+      setSelectedTests(new Set(allTestPaths));
+    }, 1500);
+  };
+
+  const toggleTest = (testPath: string) => {
+    const newSelected = new Set(selectedTests);
+    if (newSelected.has(testPath)) {
+      newSelected.delete(testPath);
+    } else {
+      newSelected.add(testPath);
+    }
+    setSelectedTests(newSelected);
+  };
+
+  const toggleCategory = (category: TestCategory) => {
+    const categoryPaths = category.tests.map(t => t.path);
+    const allSelected = categoryPaths.every(path => selectedTests.has(path));
+    
+    const newSelected = new Set(selectedTests);
+    if (allSelected) {
+      categoryPaths.forEach(path => newSelected.delete(path));
+    } else {
+      categoryPaths.forEach(path => newSelected.add(path));
+    }
+    setSelectedTests(newSelected);
+  };
+
+  const selectAllTests = () => {
+    const allTestPaths = discoveredTests.flatMap(cat => cat.tests.map(t => t.path));
+    setSelectedTests(new Set(allTestPaths));
+  };
+
+  const deselectAllTests = () => {
+    setSelectedTests(new Set());
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -307,12 +415,116 @@ export default function TestExecutionForm({ onTestStarted }: TestExecutionFormPr
         />
       </div>
 
+      {!showTestSelection && formData.repositoryUrl && (
+        <button 
+          type="button" 
+          onClick={discoverTests} 
+          disabled={discovering}
+          className="discover-button"
+        >
+          {discovering && <span className="loading-spinner"></span>}
+          {discovering ? 'Discovering Tests...' : 'Discover Available Tests'}
+        </button>
+      )}
+
+      {showTestSelection && discoveredTests.length > 0 && (
+        <div className="test-selection-section">
+          <div className="test-selection-header">
+            <h3>Select Tests to Run ({selectedTests.size} selected)</h3>
+            <div className="selection-actions">
+              <button type="button" onClick={selectAllTests} className="action-link">
+                Select All
+              </button>
+              <button type="button" onClick={deselectAllTests} className="action-link">
+                Deselect All
+              </button>
+            </div>
+          </div>
+
+          <div className="test-categories">
+            {discoveredTests.map((category, catIndex) => {
+              const categoryPaths = category.tests.map(t => t.path);
+              const allSelected = categoryPaths.every(path => selectedTests.has(path));
+              const someSelected = categoryPaths.some(path => selectedTests.has(path));
+              
+              return (
+                <div key={catIndex} className="test-category">
+                  <div className="category-header" onClick={() => toggleCategory(category)}>
+                    <input
+                      type="checkbox"
+                      checked={allSelected}
+                      ref={input => {
+                        if (input) input.indeterminate = someSelected && !allSelected;
+                      }}
+                      onChange={() => {}}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <span className="category-name">{category.name}</span>
+                    <span className="category-count">
+                      ({category.tests.filter(t => selectedTests.has(t.path)).length}/{category.tests.length})
+                    </span>
+                  </div>
+                  
+                  <div className="category-tests">
+                    {category.tests.map((test, testIndex) => (
+                      <div 
+                        key={testIndex} 
+                        className="test-item-select"
+                        onClick={() => toggleTest(test.path)}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedTests.has(test.path)}
+                          onChange={() => {}}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <div className="test-item-info">
+                          <span className="test-item-name">{test.name}</span>
+                          <span 
+                            className="test-type-badge-small"
+                            style={{
+                              backgroundColor: test.type === 'unit' ? '#3b82f620' :
+                                             test.type === 'integration' ? '#8b5cf620' :
+                                             test.type === 'functional' ? '#10b98120' : '#f59e0b20',
+                              color: test.type === 'unit' ? '#3b82f6' :
+                                    test.type === 'integration' ? '#8b5cf6' :
+                                    test.type === 'functional' ? '#10b981' : '#f59e0b'
+                            }}
+                          >
+                            {test.type}
+                          </span>
+                        </div>
+                        <span className="test-item-path">{test.path}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {error && <div className="error-message">{error}</div>}
 
-      <button type="submit" disabled={loading} className="submit-button">
+      <button type="submit" disabled={loading || (showTestSelection && selectedTests.size === 0)} className="submit-button">
         {loading && <span className="loading-spinner"></span>}
-        {loading ? 'Starting Test Run...' : 'Run Tests'}
+        {loading ? 'Starting Test Run...' : showTestSelection ? `Run ${selectedTests.size} Selected Test${selectedTests.size !== 1 ? 's' : ''}` : 'Run Tests'}
       </button>
+
+      {showTestSelection && (
+        <button 
+          type="button" 
+          onClick={() => {
+            setShowTestSelection(false);
+            setDiscoveredTests([]);
+            setSelectedTests(new Set());
+          }}
+          className="cancel-button"
+        >
+          Cancel & Reset
+        </button>
+      )}
     </form>
   );
 }
