@@ -228,10 +228,66 @@ export default function TestExecutionForm({ onTestStarted }: TestExecutionFormPr
           value={formData.framework}
           onChange={(e) => setFormData({ ...formData, framework: e.target.value })}
         >
-          <option value="jest">Jest (JavaScript/TypeScript)</option>
-          <option value="pytest">Pytest (Python)</option>
-          <option value="cypress">Cypress (E2E)</option>
-          <option value="mocha">Mocha (JavaScript)</option>
+          <optgroup label="JavaScript/TypeScript">
+            <option value="jest">Jest</option>
+            <option value="vitest">Vitest</option>
+            <option value="mocha">Mocha</option>
+            <option value="jasmine">Jasmine</option>
+            <option value="ava">Ava</option>
+            <option value="karma">Karma</option>
+          </optgroup>
+          
+          <optgroup label="Python">
+            <option value="pytest">Pytest</option>
+            <option value="unittest">unittest</option>
+            <option value="robot">Robot Framework</option>
+          </optgroup>
+          
+          <optgroup label="Java">
+            <option value="junit">JUnit</option>
+            <option value="testng">TestNG</option>
+          </optgroup>
+          
+          <optgroup label="C#/.NET">
+            <option value="nunit">NUnit</option>
+            <option value="xunit">xUnit</option>
+            <option value="mstest">MSTest</option>
+          </optgroup>
+          
+          <optgroup label="Ruby">
+            <option value="rspec">RSpec</option>
+            <option value="minitest">Minitest</option>
+          </optgroup>
+          
+          <optgroup label="PHP">
+            <option value="phpunit">PHPUnit</option>
+            <option value="codeception">Codeception</option>
+          </optgroup>
+          
+          <optgroup label="Go">
+            <option value="gotest">Go Test</option>
+            <option value="testify">Testify</option>
+          </optgroup>
+          
+          <optgroup label="E2E Testing">
+            <option value="cypress">Cypress</option>
+            <option value="playwright">Playwright</option>
+            <option value="selenium">Selenium</option>
+            <option value="puppeteer">Puppeteer</option>
+          </optgroup>
+          
+          <optgroup label="BDD/Acceptance">
+            <option value="cucumber">Cucumber</option>
+            <option value="behave">Behave (Python)</option>
+            <option value="specflow">SpecFlow (.NET)</option>
+          </optgroup>
+          
+          <optgroup label="Performance Testing">
+            <option value="k6">K6</option>
+            <option value="jmeter">JMeter</option>
+            <option value="gatling">Gatling</option>
+            <option value="locust">Locust</option>
+          </optgroup>
         </select>
       </div>
 
