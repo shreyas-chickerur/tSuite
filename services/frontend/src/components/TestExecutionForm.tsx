@@ -456,7 +456,7 @@ export default function TestExecutionForm({ onTestStarted }: TestExecutionFormPr
                       ref={input => {
                         if (input) input.indeterminate = someSelected && !allSelected;
                       }}
-                      onChange={() => {}}
+                      onChange={() => toggleCategory(category)}
                       onClick={(e) => e.stopPropagation()}
                     />
                     <span className="category-name">{category.name}</span>
@@ -475,7 +475,7 @@ export default function TestExecutionForm({ onTestStarted }: TestExecutionFormPr
                         <input
                           type="checkbox"
                           checked={selectedTests.has(test.path)}
-                          onChange={() => {}}
+                          onChange={() => toggleTest(test.path)}
                           onClick={(e) => e.stopPropagation()}
                         />
                         <div className="test-item-info">
