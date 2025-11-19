@@ -264,49 +264,117 @@ const ModernDashboard = ({ userEmail, onLogout }: ModernDashboardProps) => {
           )}
 
           {activeTab === 'profile' && (
-            <div className="section-card">
-              <div className="profile-content">
-                <h2 className="section-title">User Profile</h2>
-                
-                <div className="profile-header">
+            <div className="profile-container">
+              {/* Profile Header Card */}
+              <div className="profile-header-card">
+                <div className="profile-banner"></div>
+                <div className="profile-header-content">
                   <div className="profile-avatar-large">{userEmail[0].toUpperCase()}</div>
-                  <div className="profile-info">
-                    <h3>{userEmail}</h3>
-                    <p>Member since {new Date().toLocaleDateString()}</p>
+                  <div className="profile-header-info">
+                    <h2>{userEmail.split('@')[0]}</h2>
+                    <p className="profile-email">{userEmail}</p>
+                    <p className="profile-meta">
+                      <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
+                      </svg>
+                      Member since {new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Two Column Layout */}
+              <div className="profile-grid">
+                {/* Left Column - Account Info */}
+                <div className="profile-card">
+                  <div className="profile-card-header">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"/>
+                    </svg>
+                    <h3>Account Information</h3>
+                  </div>
+                  <div className="profile-card-body">
+                    <div className="profile-field">
+                      <label>Email Address</label>
+                      <div className="input-with-icon">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                        </svg>
+                        <input type="email" value={userEmail} readOnly className="profile-input readonly" />
+                      </div>
+                    </div>
+                    <div className="profile-field">
+                      <label>Display Name</label>
+                      <div className="input-with-icon">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"/>
+                        </svg>
+                        <input type="text" placeholder="Enter your display name" className="profile-input" />
+                      </div>
+                    </div>
+                    <div className="profile-field">
+                      <label>Organization</label>
+                      <div className="input-with-icon">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd"/>
+                        </svg>
+                        <input type="text" placeholder="Enter your organization" className="profile-input" />
+                      </div>
+                    </div>
+                    <button className="profile-save-btn">
+                      <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/>
+                      </svg>
+                      Save Changes
+                    </button>
                   </div>
                 </div>
 
-                <div className="profile-section">
-                  <h3>Account Information</h3>
-                  <div className="profile-field">
-                    <label>Email</label>
-                    <input type="email" value={userEmail} readOnly className="profile-input" />
+                {/* Right Column - Statistics */}
+                <div className="profile-card">
+                  <div className="profile-card-header">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+                    </svg>
+                    <h3>Activity Statistics</h3>
                   </div>
-                  <div className="profile-field">
-                    <label>Display Name</label>
-                    <input type="text" placeholder="Enter your name" className="profile-input" />
-                  </div>
-                  <div className="profile-field">
-                    <label>Organization</label>
-                    <input type="text" placeholder="Enter your organization" className="profile-input" />
-                  </div>
-                  <button className="profile-save-btn">Save Changes</button>
-                </div>
-
-                <div className="profile-section">
-                  <h3>Statistics</h3>
-                  <div className="profile-stats">
-                    <div className="stat-card">
-                      <div className="stat-value">0</div>
-                      <div className="stat-label">Tests Run</div>
-                    </div>
-                    <div className="stat-card">
-                      <div className="stat-value">0</div>
-                      <div className="stat-label">Security Scans</div>
-                    </div>
-                    <div className="stat-card">
-                      <div className="stat-value">0</div>
-                      <div className="stat-label">Issues Found</div>
+                  <div className="profile-card-body">
+                    <div className="stats-grid">
+                      <div className="stat-item">
+                        <div className="stat-icon tests">
+                          <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
+                            <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/>
+                          </svg>
+                        </div>
+                        <div className="stat-info">
+                          <div className="stat-value">0</div>
+                          <div className="stat-label">Tests Run</div>
+                        </div>
+                      </div>
+                      <div className="stat-item">
+                        <div className="stat-icon security">
+                          <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                          </svg>
+                        </div>
+                        <div className="stat-info">
+                          <div className="stat-value">0</div>
+                          <div className="stat-label">Security Scans</div>
+                        </div>
+                      </div>
+                      <div className="stat-item">
+                        <div className="stat-icon issues">
+                          <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"/>
+                          </svg>
+                        </div>
+                        <div className="stat-info">
+                          <div className="stat-value">0</div>
+                          <div className="stat-label">Issues Found</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
