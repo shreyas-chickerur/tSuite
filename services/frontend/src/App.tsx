@@ -21,12 +21,19 @@ function App() {
   };
 
   const handleLogout = () => {
-    setIsAuthenticated(false);
-    setUserEmail('');
+    setIsLoading(true);
+    
+    // Simulate logout process
+    setTimeout(() => {
+      setIsAuthenticated(false);
+      setUserEmail('');
+      setIsLoading(false);
+    }, 1500); // 1.5 second loading screen for logout
   };
 
   if (isLoading) {
-    return <LoadingScreen message="Authenticating..." />;
+    const message = isAuthenticated ? "Logging out..." : "Authenticating...";
+    return <LoadingScreen message={message} />;
   }
 
   if (!isAuthenticated) {
