@@ -31,6 +31,7 @@ export default function TestExecutionForm({ onTestStarted }: TestExecutionFormPr
   const [selectedTests, setSelectedTests] = useState<Set<string>>(new Set());
   const [showTestSelection, setShowTestSelection] = useState(false);
   const [discovering, setDiscovering] = useState(false);
+  const [runAllTests, setRunAllTests] = useState(true);
 
   const discoverTests = async () => {
     setDiscovering(true);
@@ -430,15 +431,29 @@ export default function TestExecutionForm({ onTestStarted }: TestExecutionFormPr
       {showTestSelection && discoveredTests.length > 0 && (
         <div className="test-selection-section">
           <div className="test-selection-header">
-            <h3>Select Tests to Run ({selectedTests.size} selected)</h3>
-            <div className="selection-actions">
-              <button type="button" onClick={selectAllTests} className="action-link">
-                Select All
-              </button>
-              <button type="button" onClick={deselectAllTests} className="action-link">
-                Deselect All
-              </button>
+            <div className="run-mode-toggle">
+              <label className="toggle-label">
+                <input
+                  type="checkbox"
+                  checked={runAllTests}
+                  onChange={(e) => setRunAllTests(e.target.checked)}
+                />
+                <span>Run All Tests</span>
+              </label>
+              {!runAllTests && (
+                <span className="selection-count">({selectedTests.size} selected)</span>
+              )}
             </div>
+            {!runAllTests && (
+              <div className="selection-actions">
+                <button type="button" onClick={selectAllTests} className="action-link">
+                  Select All
+                </button>
+                <button type="button" onClick={deselectAllTests} className="action-link">
+                  Deselect All
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="test-categories">
@@ -507,24 +522,17 @@ export default function TestExecutionForm({ onTestStarted }: TestExecutionFormPr
 
       {error && <div className="error-message">{error}</div>}
 
-      <button type="submit" disabled={loading || (showTestSelection && selectedTests.size === 0)} className="submit-button">
+      <button 
+        type="submit" 
+        disabled={loading || (showTestSelection && !runAllTests && selectedTests.size === 0)} 
+        className="submit-button"
+      >
         {loading && <span className="loading-spinner"></span>}
-        {loading ? 'Starting Test Run...' : showTestSelection ? `Run ${selectedTests.size} Selected Test${selectedTests.size !== 1 ? 's' : ''}` : 'Run Tests'}
+        {loading ? 'Starting Test Run...' : 
+         showTestSelection ? 
+           (runAllTests ? `Run All ${discoveredTests.reduce((sum, cat) => sum + cat.tests.length, 0)} Tests` : `Run ${selectedTests.size} Selected Test${selectedTests.size !== 1 ? 's' : ''}`) : 
+           'Run Tests'}
       </button>
-
-      {showTestSelection && (
-        <button 
-          type="button" 
-          onClick={() => {
-            setShowTestSelection(false);
-            setDiscoveredTests([]);
-            setSelectedTests(new Set());
-          }}
-          className="cancel-button"
-        >
-          Cancel & Reset
-        </button>
-      )}
     </form>
   );
 }

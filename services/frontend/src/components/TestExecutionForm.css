@@ -130,14 +130,40 @@
   gap: 1rem;
 }
 
-.test-selection-header h3 {
-  margin: 0;
+.run-mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
   font-size: 0.95rem;
   font-weight: 600;
   color: #f1f5f9;
   font-family: 'Monaco', 'Courier New', monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+}
+
+.toggle-label input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+.toggle-label span {
+  user-select: none;
+}
+
+.selection-count {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-weight: 600;
 }
 
 .selection-actions {
@@ -289,25 +315,6 @@
   max-width: 250px;
 }
 
-.cancel-button {
-  width: 100%;
-  padding: 0.75rem 1.5rem;
-  background: #334155;
-  border: 1px solid #475569;
-  color: #e2e8f0;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: 'Monaco', 'Courier New', monospace;
-  transition: all 0.2s ease;
-  margin-top: 0.5rem;
-}
-
-.cancel-button:hover {
-  background: #475569;
-  border-color: #64748b;
-}
 
 .error-message {
   padding: 1rem;
