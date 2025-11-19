@@ -1,13 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import LandingPage from './components/LandingPage';
 import ModernDashboard from './components/ModernDashboard';
 import LoadingScreen from './components/LoadingScreen';
 import './App.css';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    // Check localStorage for existing session
+    const savedAuth = localStorage.getItem('tsuite-auth');
+    return savedAuth === 'true';
+  });
   const [isLoading, setIsLoading] = useState(false);
-  const [userEmail, setUserEmail] = useState('');
+  const [userEmail, setUserEmail] = useState(() => {
+    // Load saved email from localStorage
+    return localStorage.getItem('tsuite-user-email') || '';
+  });
+
+  // Save auth state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('tsuite-auth', isAuthenticated.toString());
+    if (isAuthenticated && userEmail) {
+      localStorage.setItem('tsuite-user-email', userEmail);
+    } else {
+      localStorage.removeItem('tsuite-user-email');
+    }
+  }, [isAuthenticated, userEmail]);
 
   const handleLogin = (email: string) => {
     setIsLoading(true);
@@ -27,6 +44,8 @@ function App() {
     setTimeout(() => {
       setIsAuthenticated(false);
       setUserEmail('');
+      localStorage.removeItem('tsuite-auth');
+      localStorage.removeItem('tsuite-user-email');
       setIsLoading(false);
     }, 1500); // 1.5 second loading screen for logout
   };
