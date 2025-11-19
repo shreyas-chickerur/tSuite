@@ -46,32 +46,38 @@ export default function TestResults({ testRunId }: TestResultsProps) {
   useEffect(() => {
     console.log('Starting to poll test results for:', testRunId);
     
-    // Check for demo results first
-    const demoData = sessionStorage.getItem(`test-results-${testRunId}`);
-    if (demoData) {
-      console.log('Loading DEMO test results');
-      const demoResults = JSON.parse(demoData);
-      setResults(demoResults);
-      setStatus({ status: 'completed' });
-      setLoading(false);
+    let demoInterval: ReturnType<typeof setInterval> | null = null;
+    let interval: ReturnType<typeof setInterval> | null = null;
+    
+    // Function to load demo results
+    const loadDemoResults = () => {
+      const demoData = sessionStorage.getItem(`test-results-${testRunId}`);
+      if (demoData) {
+        console.log('Loading DEMO test results');
+        const demoResults = JSON.parse(demoData);
+        setResults(demoResults);
+        setStatus({ status: 'completed' });
+        setLoading(false);
+        return true;
+      }
+      return false;
+    };
+    
+    // Check for existing demo results
+    if (loadDemoResults()) {
       return;
     }
     
     // Poll for demo results every 500ms
-    const demoInterval = window.setInterval(() => {
-      const data = sessionStorage.getItem(`test-results-${testRunId}`);
-      if (data) {
-        console.log('Demo results appeared, loading...');
-        const demoResults = JSON.parse(data);
-        setResults(demoResults);
-        setStatus({ status: 'completed' });
-        setLoading(false);
-        clearInterval(demoInterval);
-        clearInterval(interval);
+    demoInterval = window.setInterval(() => {
+      if (loadDemoResults()) {
+        if (demoInterval) clearInterval(demoInterval);
+        if (interval) clearInterval(interval);
       }
     }, 500);
     
-    const interval = window.setInterval(async () => {
+    // Poll for real API results
+    interval = window.setInterval(async () => {
       try {
         const statusData = await api.getTestStatus(testRunId);
         console.log('Test status update:', statusData);
@@ -83,8 +89,8 @@ export default function TestResults({ testRunId }: TestResultsProps) {
           console.log('Test results:', resultsData);
           setResults(resultsData);
           setLoading(false);
-          clearInterval(interval);
-          clearInterval(demoInterval);
+          if (interval) clearInterval(interval);
+          if (demoInterval) clearInterval(demoInterval);
         }
       } catch (error) {
         console.error('Error polling test status:', error);
@@ -93,8 +99,8 @@ export default function TestResults({ testRunId }: TestResultsProps) {
 
     return () => {
       console.log('Cleaning up polling for:', testRunId);
-      clearInterval(interval);
-      clearInterval(demoInterval);
+      if (interval) clearInterval(interval);
+      if (demoInterval) clearInterval(demoInterval);
     };
   }, [testRunId]);
 
