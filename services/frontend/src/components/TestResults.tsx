@@ -30,6 +30,7 @@ export default function TestResults({ testRunId }: TestResultsProps) {
   const [status, setStatus] = useState<TestStatus | null>(null);
   const [results, setResults] = useState<TestResults | null>(null);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<'all' | 'passed' | 'failed' | 'skipped'>('all');
 
   useEffect(() => {
     console.log('Starting to poll test results for:', testRunId);
@@ -166,6 +167,18 @@ export default function TestResults({ testRunId }: TestResultsProps) {
     );
   }
 
+  // Get test list and apply filter
+  const testList = (testData as { tests?: Array<{ name: string; status: string; duration: number; error?: string }> })?.tests || [];
+  const filteredTests = filter === 'all' 
+    ? testList 
+    : testList.filter(test => test.status === filter);
+
+  // Calculate total from actual data
+  const totalTests = (testData as { total?: number })?.total || testList.length || 0;
+  const passedTests = (testData as { passed?: number })?.passed || 0;
+  const failedTests = (testData as { failed?: number })?.failed || 0;
+  const skippedTests = (testData as { skipped?: number })?.skipped || 0;
+
   // Show successful results
   return (
     <div className="test-results">
@@ -181,21 +194,41 @@ export default function TestResults({ testRunId }: TestResultsProps) {
 
       <div className="results-summary">
         <div className="metrics">
-          <div className="metric">
+          <div 
+            className={`metric ${filter === 'all' ? 'active' : ''}`}
+            onClick={() => setFilter('all')}
+            style={{ cursor: 'pointer' }}
+            title="Click to show all tests"
+          >
             <span className="metric-label">Total</span>
-            <span className="metric-value">{testData?.total_tests || 0}</span>
+            <span className="metric-value">{totalTests}</span>
           </div>
-          <div className="metric passed">
+          <div 
+            className={`metric passed ${filter === 'passed' ? 'active' : ''}`}
+            onClick={() => setFilter('passed')}
+            style={{ cursor: 'pointer' }}
+            title="Click to show only passed tests"
+          >
             <span className="metric-label">Passed</span>
-            <span className="metric-value">{testData?.passed || 0}</span>
+            <span className="metric-value">{passedTests}</span>
           </div>
-          <div className="metric failed">
+          <div 
+            className={`metric failed ${filter === 'failed' ? 'active' : ''}`}
+            onClick={() => setFilter('failed')}
+            style={{ cursor: 'pointer' }}
+            title="Click to show only failed tests"
+          >
             <span className="metric-label">Failed</span>
-            <span className="metric-value">{testData?.failed || 0}</span>
+            <span className="metric-value">{failedTests}</span>
           </div>
-          <div className="metric skipped">
+          <div 
+            className={`metric skipped ${filter === 'skipped' ? 'active' : ''}`}
+            onClick={() => setFilter('skipped')}
+            style={{ cursor: 'pointer' }}
+            title="Click to show only skipped tests"
+          >
             <span className="metric-label">Skipped</span>
-            <span className="metric-value">{testData?.skipped || 0}</span>
+            <span className="metric-value">{skippedTests}</span>
           </div>
           <div className="metric">
             <span className="metric-label">Duration</span>
@@ -203,6 +236,48 @@ export default function TestResults({ testRunId }: TestResultsProps) {
           </div>
         </div>
       </div>
+
+      {/* Test List */}
+      {testList.length > 0 && (
+        <div className="test-list-section">
+          <div className="test-list-header">
+            <h4>
+              {filter === 'all' ? 'All Tests' : `${filter.charAt(0).toUpperCase() + filter.slice(1)} Tests`}
+              <span className="test-count">({filteredTests.length})</span>
+            </h4>
+          </div>
+          <div className="test-list">
+            {filteredTests.map((test, index) => (
+              <div key={index} className={`test-item ${test.status}`}>
+                <div className="test-status-icon">
+                  {test.status === 'passed' && (
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                    </svg>
+                  )}
+                  {test.status === 'failed' && (
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+                    </svg>
+                  )}
+                  {test.status === 'skipped' && (
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clipRule="evenodd"/>
+                    </svg>
+                  )}
+                </div>
+                <div className="test-info">
+                  <div className="test-name">{test.name}</div>
+                  {test.error && (
+                    <div className="test-error">{test.error}</div>
+                  )}
+                </div>
+                <div className="test-duration">{test.duration.toFixed(3)}s</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {testData?.coverage && Object.keys(testData.coverage).length > 0 && (
         <div className="coverage-section">
