@@ -31,6 +31,17 @@ export default function TestResults({ testRunId }: TestResultsProps) {
   const [results, setResults] = useState<TestResults | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'passed' | 'failed' | 'skipped'>('all');
+  const [expandedTests, setExpandedTests] = useState<Set<number>>(new Set());
+
+  const toggleTest = (index: number) => {
+    const newExpanded = new Set(expandedTests);
+    if (newExpanded.has(index)) {
+      newExpanded.delete(index);
+    } else {
+      newExpanded.add(index);
+    }
+    setExpandedTests(newExpanded);
+  };
 
   useEffect(() => {
     console.log('Starting to poll test results for:', testRunId);
@@ -168,10 +179,22 @@ export default function TestResults({ testRunId }: TestResultsProps) {
   }
 
   // Get test list and apply filter
-  const testList = (testData as { tests?: Array<{ name: string; status: string; duration: number; error?: string }> })?.tests || [];
+  const testList = (testData as { tests?: Array<{ name: string; status: string; duration: number; error?: string; type?: string; logs?: string[] }> })?.tests || [];
   const filteredTests = filter === 'all' 
     ? testList 
     : testList.filter(test => test.status === filter);
+
+  // Get test type badge color
+  const getTestTypeBadge = (type?: string) => {
+    const badges: Record<string, { label: string; color: string }> = {
+      unit: { label: 'Unit', color: '#3b82f6' },
+      integration: { label: 'Integration', color: '#8b5cf6' },
+      functional: { label: 'Functional', color: '#10b981' },
+      e2e: { label: 'E2E', color: '#f59e0b' },
+      performance: { label: 'Performance', color: '#ef4444' }
+    };
+    return badges[type || 'unit'] || badges.unit;
+  };
 
   // Calculate total from actual data
   const totalTests = (testData as { total?: number })?.total || testList.length || 0;
@@ -247,34 +270,83 @@ export default function TestResults({ testRunId }: TestResultsProps) {
             </h4>
           </div>
           <div className="test-list">
-            {filteredTests.map((test, index) => (
-              <div key={index} className={`test-item ${test.status}`}>
-                <div className="test-status-icon">
-                  {test.status === 'passed' && (
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
-                    </svg>
-                  )}
-                  {test.status === 'failed' && (
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
-                    </svg>
-                  )}
-                  {test.status === 'skipped' && (
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clipRule="evenodd"/>
-                    </svg>
+            {filteredTests.map((test, index) => {
+              const isExpanded = expandedTests.has(index);
+              const typeBadge = getTestTypeBadge(test.type);
+              
+              return (
+                <div key={index} className={`test-item-wrapper ${test.status}`}>
+                  <div 
+                    className={`test-item ${test.status} ${isExpanded ? 'expanded' : ''}`}
+                    onClick={() => toggleTest(index)}
+                  >
+                    <div className="test-status-icon">
+                      {test.status === 'passed' && (
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                        </svg>
+                      )}
+                      {test.status === 'failed' && (
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+                        </svg>
+                      )}
+                      {test.status === 'skipped' && (
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clipRule="evenodd"/>
+                        </svg>
+                      )}
+                    </div>
+                    <div className="test-info">
+                      <div className="test-name-row">
+                        <span className="test-name">{test.name}</span>
+                        <span 
+                          className="test-type-badge" 
+                          style={{ backgroundColor: `${typeBadge.color}20`, color: typeBadge.color, borderColor: typeBadge.color }}
+                        >
+                          {typeBadge.label}
+                        </span>
+                      </div>
+                      {test.error && !isExpanded && (
+                        <div className="test-error-preview">{test.error}</div>
+                      )}
+                    </div>
+                    <div className="test-meta">
+                      <div className="test-duration">{test.duration.toFixed(3)}s</div>
+                      <div className="expand-icon">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
+                          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {isExpanded && (
+                    <div className="test-details">
+                      {test.error && (
+                        <div className="test-error-full">
+                          <h5>Error Details:</h5>
+                          <pre>{test.error}</pre>
+                        </div>
+                      )}
+                      {test.logs && test.logs.length > 0 && (
+                        <div className="test-logs">
+                          <h5>Test Logs:</h5>
+                          <div className="log-entries">
+                            {test.logs.map((log, logIndex) => (
+                              <div key={logIndex} className={`log-entry ${log.includes('ERROR') ? 'error' : ''}`}>
+                                <span className="log-index">{logIndex + 1}</span>
+                                <span className="log-text">{log}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
-                <div className="test-info">
-                  <div className="test-name">{test.name}</div>
-                  {test.error && (
-                    <div className="test-error">{test.error}</div>
-                  )}
-                </div>
-                <div className="test-duration">{test.duration.toFixed(3)}s</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

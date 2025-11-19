@@ -44,21 +44,113 @@ export default function TestExecutionForm({ onTestStarted }: TestExecutionFormPr
               skipped: 1,
               duration: 3.45,
               tests: [
-                { name: 'User Authentication', status: 'passed', duration: 0.234 },
-                { name: 'API Endpoint /users', status: 'passed', duration: 0.156 },
-                { name: 'Database Connection', status: 'passed', duration: 0.089 },
-                { name: 'Login Validation', status: 'failed', duration: 0.445, error: 'Expected status 200 but got 401' },
-                { name: 'Password Hashing', status: 'passed', duration: 0.123 },
-                { name: 'JWT Token Generation', status: 'passed', duration: 0.098 },
-                { name: 'User Registration', status: 'passed', duration: 0.267 },
-                { name: 'Email Validation', status: 'passed', duration: 0.034 },
-                { name: 'Profile Update', status: 'failed', duration: 0.389, error: 'Null reference exception in updateProfile()' },
-                { name: 'Session Management', status: 'passed', duration: 0.178 },
-                { name: 'Logout Functionality', status: 'passed', duration: 0.067 },
-                { name: 'Password Reset', status: 'skipped', duration: 0 },
-                { name: 'Rate Limiting', status: 'passed', duration: 0.234 },
-                { name: 'CORS Configuration', status: 'passed', duration: 0.045 },
-                { name: 'Error Handling', status: 'passed', duration: 0.112 }
+                { 
+                  name: 'User Authentication', 
+                  status: 'passed', 
+                  duration: 0.234,
+                  type: 'unit',
+                  logs: ['Initializing auth service', 'Validating credentials', 'Token generated successfully']
+                },
+                { 
+                  name: 'API Endpoint /users', 
+                  status: 'passed', 
+                  duration: 0.156,
+                  type: 'integration',
+                  logs: ['Starting API test', 'Sending GET request', 'Response received: 200 OK']
+                },
+                { 
+                  name: 'Database Connection', 
+                  status: 'passed', 
+                  duration: 0.089,
+                  type: 'integration',
+                  logs: ['Connecting to database', 'Connection established', 'Query executed successfully']
+                },
+                { 
+                  name: 'Login Validation', 
+                  status: 'failed', 
+                  duration: 0.445,
+                  type: 'functional',
+                  error: 'Expected status 200 but got 401',
+                  logs: ['Starting login test', 'Sending credentials', 'ERROR: Authentication failed', 'Stack trace: at login.test.js:45']
+                },
+                { 
+                  name: 'Password Hashing', 
+                  status: 'passed', 
+                  duration: 0.123,
+                  type: 'unit',
+                  logs: ['Testing bcrypt hash', 'Hash generated', 'Verification successful']
+                },
+                { 
+                  name: 'JWT Token Generation', 
+                  status: 'passed', 
+                  duration: 0.098,
+                  type: 'unit',
+                  logs: ['Creating JWT payload', 'Signing token', 'Token validation passed']
+                },
+                { 
+                  name: 'User Registration', 
+                  status: 'passed', 
+                  duration: 0.267,
+                  type: 'functional',
+                  logs: ['Testing registration flow', 'User data validated', 'User created successfully', 'Welcome email queued']
+                },
+                { 
+                  name: 'Email Validation', 
+                  status: 'passed', 
+                  duration: 0.034,
+                  type: 'unit',
+                  logs: ['Testing email regex', 'Valid email formats accepted', 'Invalid formats rejected']
+                },
+                { 
+                  name: 'Profile Update', 
+                  status: 'failed', 
+                  duration: 0.389,
+                  type: 'integration',
+                  error: 'Null reference exception in updateProfile()',
+                  logs: ['Fetching user profile', 'Applying updates', 'ERROR: Cannot read property "avatar" of null', 'Stack trace: at profile.service.js:128']
+                },
+                { 
+                  name: 'Session Management', 
+                  status: 'passed', 
+                  duration: 0.178,
+                  type: 'integration',
+                  logs: ['Creating session', 'Session stored in Redis', 'Session retrieved successfully']
+                },
+                { 
+                  name: 'Logout Functionality', 
+                  status: 'passed', 
+                  duration: 0.067,
+                  type: 'functional',
+                  logs: ['Initiating logout', 'Session invalidated', 'Tokens cleared']
+                },
+                { 
+                  name: 'Password Reset', 
+                  status: 'skipped', 
+                  duration: 0,
+                  type: 'functional',
+                  logs: ['Test skipped: Email service not configured']
+                },
+                { 
+                  name: 'Rate Limiting', 
+                  status: 'passed', 
+                  duration: 0.234,
+                  type: 'integration',
+                  logs: ['Testing rate limiter', 'Sending 100 requests', 'Rate limit enforced correctly', '429 status returned after threshold']
+                },
+                { 
+                  name: 'CORS Configuration', 
+                  status: 'passed', 
+                  duration: 0.045,
+                  type: 'integration',
+                  logs: ['Testing CORS headers', 'Allowed origins verified', 'Preflight requests handled']
+                },
+                { 
+                  name: 'Error Handling', 
+                  status: 'passed', 
+                  duration: 0.112,
+                  type: 'unit',
+                  logs: ['Testing error middleware', 'Errors caught correctly', 'Error responses formatted properly']
+                }
               ]
             }
           };
