@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TestExecutionForm from './TestExecutionForm';
 import TestResults from './TestResults';
 import SecurityScanForm from './SecurityScanForm';
@@ -27,6 +27,10 @@ const ModernDashboard = ({ userEmail, onLogout }: ModernDashboardProps) => {
   const [scanId, setScanId] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem('tsuite-theme');
+    return (saved as 'dark' | 'light') || 'dark';
+  });
 
   const handleTestStarted = (runId: string) => {
     setTestRunId(runId);
@@ -76,8 +80,19 @@ const ModernDashboard = ({ userEmail, onLogout }: ModernDashboardProps) => {
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
+  const toggleTheme = (newTheme: 'dark' | 'light') => {
+    setTheme(newTheme);
+    localStorage.setItem('tsuite-theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+  };
+
+  // Apply theme on mount and when it changes
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
   return (
-    <div className="modern-dashboard">
+    <div className="modern-dashboard" data-theme={theme}>
       {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-header">
@@ -335,10 +350,13 @@ const ModernDashboard = ({ userEmail, onLogout }: ModernDashboardProps) => {
                       <p>Choose between light and dark mode</p>
                     </div>
                     <div className="setting-control">
-                      <select className="setting-select">
+                      <select 
+                        className="setting-select"
+                        value={theme}
+                        onChange={(e) => toggleTheme(e.target.value as 'dark' | 'light')}
+                      >
                         <option value="dark">Dark Mode</option>
-                        <option value="light">Light Mode (Coming Soon)</option>
-                        <option value="auto">Auto (Coming Soon)</option>
+                        <option value="light">Light Mode</option>
                       </select>
                     </div>
                   </div>
