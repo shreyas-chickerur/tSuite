@@ -34,6 +34,31 @@ export default function TestResults({ testRunId }: TestResultsProps) {
   useEffect(() => {
     console.log('Starting to poll test results for:', testRunId);
     
+    // Check for demo results first
+    const demoData = sessionStorage.getItem(`test-results-${testRunId}`);
+    if (demoData) {
+      console.log('Loading DEMO test results');
+      const demoResults = JSON.parse(demoData);
+      setResults(demoResults);
+      setStatus({ status: 'completed' });
+      setLoading(false);
+      return;
+    }
+    
+    // Poll for demo results every 500ms
+    const demoInterval = window.setInterval(() => {
+      const data = sessionStorage.getItem(`test-results-${testRunId}`);
+      if (data) {
+        console.log('Demo results appeared, loading...');
+        const demoResults = JSON.parse(data);
+        setResults(demoResults);
+        setStatus({ status: 'completed' });
+        setLoading(false);
+        clearInterval(demoInterval);
+        clearInterval(interval);
+      }
+    }, 500);
+    
     const interval = window.setInterval(async () => {
       try {
         const statusData = await api.getTestStatus(testRunId);
@@ -47,6 +72,7 @@ export default function TestResults({ testRunId }: TestResultsProps) {
           setResults(resultsData);
           setLoading(false);
           clearInterval(interval);
+          clearInterval(demoInterval);
         }
       } catch (error) {
         console.error('Error polling test status:', error);
@@ -56,6 +82,7 @@ export default function TestResults({ testRunId }: TestResultsProps) {
     return () => {
       console.log('Cleaning up polling for:', testRunId);
       clearInterval(interval);
+      clearInterval(demoInterval);
     };
   }, [testRunId]);
 

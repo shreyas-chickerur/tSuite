@@ -24,6 +24,53 @@ export default function TestExecutionForm({ onTestStarted }: TestExecutionFormPr
     try {
       const testRunId = `test-${Date.now()}`;
       
+      // Check if this is a demo request
+      if (formData.repositoryUrl.toLowerCase().includes('demo') || 
+          formData.repositoryUrl.toLowerCase().includes('example')) {
+        console.log('Running DEMO test execution with sample results');
+        
+        // Start the test to show loading state
+        onTestStarted(testRunId);
+        
+        // Store demo results in sessionStorage with a delay to simulate testing
+        setTimeout(() => {
+          const demoResults = {
+            status: 'completed',
+            results: {
+              success: true,
+              total: 15,
+              passed: 12,
+              failed: 2,
+              skipped: 1,
+              duration: 3.45,
+              tests: [
+                { name: 'User Authentication', status: 'passed', duration: 0.234 },
+                { name: 'API Endpoint /users', status: 'passed', duration: 0.156 },
+                { name: 'Database Connection', status: 'passed', duration: 0.089 },
+                { name: 'Login Validation', status: 'failed', duration: 0.445, error: 'Expected status 200 but got 401' },
+                { name: 'Password Hashing', status: 'passed', duration: 0.123 },
+                { name: 'JWT Token Generation', status: 'passed', duration: 0.098 },
+                { name: 'User Registration', status: 'passed', duration: 0.267 },
+                { name: 'Email Validation', status: 'passed', duration: 0.034 },
+                { name: 'Profile Update', status: 'failed', duration: 0.389, error: 'Null reference exception in updateProfile()' },
+                { name: 'Session Management', status: 'passed', duration: 0.178 },
+                { name: 'Logout Functionality', status: 'passed', duration: 0.067 },
+                { name: 'Password Reset', status: 'skipped', duration: 0 },
+                { name: 'Rate Limiting', status: 'passed', duration: 0.234 },
+                { name: 'CORS Configuration', status: 'passed', duration: 0.045 },
+                { name: 'Error Handling', status: 'passed', duration: 0.112 }
+              ]
+            }
+          };
+          
+          sessionStorage.setItem(`test-results-${testRunId}`, JSON.stringify(demoResults));
+          window.dispatchEvent(new Event('storage'));
+        }, 4000); // 4 second delay to show loading state
+        
+        setLoading(false);
+        return;
+      }
+      
       console.log('Submitting test execution:', {
         project_id: formData.projectId,
         test_run_id: testRunId,
